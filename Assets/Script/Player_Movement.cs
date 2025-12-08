@@ -9,6 +9,9 @@ public class PlayerMovementMinimal : MonoBehaviour
     private Rigidbody rb;
     private bool isGrounded;
 
+    // Store the last direction for block placement
+    private float lastMoveDir = 1f; // 1 = facing right, -1 = facing left
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -18,6 +21,7 @@ public class PlayerMovementMinimal : MonoBehaviour
     {
         HandleMovement();
         HandleJump();
+        HandleFacingDirection();
     }
 
     void HandleMovement()
@@ -29,9 +33,22 @@ public class PlayerMovementMinimal : MonoBehaviour
         else if (CompareTag("Player_2"))
             move = Input.GetAxisRaw("Horizontal_Arrows");
 
+        // Store last direction (only if moving)
+        if (move != 0)
+            lastMoveDir = Mathf.Sign(move);
+
         Vector3 velocity = rb.velocity;
         velocity.x = move * moveSpeed;
         rb.velocity = new Vector3(velocity.x, velocity.y, rb.velocity.z);
+    }
+
+    void HandleFacingDirection()
+    {
+        // Flip the player by rotating Y
+        if (lastMoveDir == 1)
+            transform.rotation = Quaternion.Euler(0, 0, 0);      // Facing right
+        else if (lastMoveDir == -1)
+            transform.rotation = Quaternion.Euler(0, 180, 0);    // Facing left
     }
 
     void HandleJump()
@@ -49,20 +66,21 @@ public class PlayerMovementMinimal : MonoBehaviour
         }
     }
 
-    // Ground check via collision
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Floor"))
-        {
             isGrounded = true;
-        }
     }
 
     private void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.CompareTag("Floor"))
-        {
             isGrounded = false;
-        }
+    }
+
+    // Helper for other scripts (like lego box placement)
+    public float GetFacingDirection()
+    {
+        return lastMoveDir;
     }
 }
