@@ -2,8 +2,11 @@
 
 public class Elevator : MonoBehaviour
 {
-    [Header("Buttons that activate this elevator")]
-    public Button[] requiredButtons;
+    public enum ActivationMode { AND, OR }
+
+    [Header("Power Sources that activate this elevator")]
+    public PowerSource[] requiredSources;
+    public ActivationMode activationMode = ActivationMode.AND; // Default is AND
 
     [Header("Movement")]
     public Transform pointA;
@@ -30,24 +33,23 @@ public class Elevator : MonoBehaviour
 
     void Update()
     {
-        bool buttonsPressed = AreButtonsPressed();
+        bool powered = AreSourcesPowered();
 
         // Update color
         if (elevatorRenderer != null)
-            elevatorRenderer.material.color = buttonsPressed ? activeColor : idleColor;
+            elevatorRenderer.material.color = powered ? activeColor : idleColor;
 
-        if (buttonsPressed)
+        if (powered)
         {
             // Set initial target if elevator was frozen
             if (targetPosition == transform.position)
             {
                 targetPosition = pointA.position;
-                movingToB = true; // after reaching A, go to B
+                movingToB = true;
             }
 
             MoveElevator();
         }
-        // Else do nothing, elevator frozen
     }
 
     void MoveElevator()
@@ -58,7 +60,6 @@ public class Elevator : MonoBehaviour
             moveSpeed * Time.deltaTime
         );
 
-        // Check if reached target
         if (Vector3.Distance(transform.position, targetPosition) < 0.01f)
         {
             // Switch target
@@ -71,13 +72,30 @@ public class Elevator : MonoBehaviour
         }
     }
 
-    bool AreButtonsPressed()
+    bool AreSourcesPowered()
     {
-        foreach (Button b in requiredButtons)
+        if (requiredSources.Length == 0)
+            return false;
+
+        switch (activationMode)
         {
-            if (!b.isPressed)
+            case ActivationMode.AND:
+                foreach (PowerSource src in requiredSources)
+                {
+                    if (!src.IsPowered())
+                        return false;
+                }
+                return true;
+
+            case ActivationMode.OR:
+                foreach (PowerSource src in requiredSources)
+                {
+                    if (src.IsPowered())
+                        return true;
+                }
                 return false;
         }
-        return requiredButtons.Length > 0;
+
+        return false; // fallback
     }
 }

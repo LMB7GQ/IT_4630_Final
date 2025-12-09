@@ -1,18 +1,46 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Charecter_1 : MonoBehaviour
+public class Character1Battery : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public bool hasBattery = true;               // Player starts with a battery
+    private BatterySocket currentSocket = null;  // Socket player is in trigger with
 
-    // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.S) && currentSocket != null)
+        {
+            if (hasBattery && !currentSocket.hasBattery)
+            {
+                // Place battery
+                currentSocket.InsertBattery();
+                hasBattery = false;
+            }
+            else if (!hasBattery && currentSocket.hasBattery)
+            {
+                // Pick battery back up
+                currentSocket.RemoveBattery();
+                hasBattery = true;
+            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Socket"))
+        {
+            BatterySocket socket = other.GetComponentInParent<BatterySocket>();
+            if (socket != null)
+                currentSocket = socket;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Socket"))
+        {
+            BatterySocket socket = other.GetComponentInParent<BatterySocket>();
+            if (socket != null && currentSocket == socket)
+                currentSocket = null;
+        }
     }
 }

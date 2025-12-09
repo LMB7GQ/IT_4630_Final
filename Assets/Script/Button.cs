@@ -1,7 +1,7 @@
 using UnityEngine;
 
-public class Button : MonoBehaviour
-{
+public class Button : PowerSource
+{ 
     [Tooltip("Tag that can activate the button")]
     public string requiredTag = "Lego_Block";
 
@@ -26,5 +26,9 @@ public class Button : MonoBehaviour
         {
             isPressed = false;
         }
+    }
+    public override bool IsPowered()
+    {
+        return isPressed;
     }
 }

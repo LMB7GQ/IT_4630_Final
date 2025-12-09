@@ -1,18 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Door : MonoBehaviour
+public class PoweredDoor : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public PowerSource[] requiredSources;
+    public GameObject doorVisual; // drag your wall sprite here
 
-    // Update is called once per frame
     void Update()
     {
-        
+        bool allPowered = true;
+
+        foreach (PowerSource src in requiredSources)
+        {
+            if (!src.IsPowered())
+            {
+                allPowered = false;
+                break;
+            }
+        }
+
+        doorVisual.SetActive(!allPowered); // powered → hide
     }
 }
