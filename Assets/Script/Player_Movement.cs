@@ -68,13 +68,15 @@ public class PlayerMovementMinimal : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Floor"))
+        if (collision.gameObject.CompareTag("Floor") ||
+            collision.gameObject.CompareTag("Lego_Block"))
             isGrounded = true;
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Floor"))
+        if (collision.gameObject.CompareTag("Floor")||
+            collision.gameObject.CompareTag("Lego_Block"))
             isGrounded = false;
     }
 
