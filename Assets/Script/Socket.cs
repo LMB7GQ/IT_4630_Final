@@ -42,7 +42,7 @@ public class BatterySocket : PowerSource
         }
     }
 
-    // ✅ This is what Elevator uses to check if it's powered
+    // This is what Elevator uses to check if it's powered
     public override bool IsPowered()
     {
         return hasBattery;
